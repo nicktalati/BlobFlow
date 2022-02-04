@@ -9,11 +9,12 @@ class Blob:
     at the specified position "pos" and moves with speed "speed", which
     changes at each time step if "speed_var" is nonzero.
     """
-    def __init__(self, pos, speed, entries, speed_var=0):
+    def __init__(self, pos, speed, entries, speed_var=0, acc_var=0.0):
         self.entries = np.array(entries)
         self.pos = pos
         self.speed = speed
         self.speed_var = speed_var
+        self.acc_var = acc_var
 
     def __str__(self):
         return '<Blob object at position ' + str(self.pos) + ': ' + str(self.entries) + '>'
@@ -22,14 +23,15 @@ class Blob:
         """
         Tells the blob how to advance its position in time.
         """
-        self.pos += self.speed + self.speed * random.randint(-1 * self.speed_var, self.speed_var)
+        self.speed += random.uniform(-1 * self.acc_var, self.acc_var)
+        self.pos += self.speed + self.speed * random.uniform(-1 * self.speed_var, self.speed_var)
 
     def is_covering(self, pixel):
         """
         Determines if a blob is covering a pixel, where "pixel" represents
         the index of a given pixel in the BlobSpace.
         """
-        if pixel in range(self.pos, self.pos + len(self.entries)):
+        if pixel >= self.pos and pixel < self.pos + len(self.entries):
             return True
         return False
 
@@ -38,6 +40,7 @@ class Blob:
         Returns the color of the blob at a given pixel (relative to pos).
         """
         return self.entries[pixel]
+
 
 
 class BlobSpace:
@@ -72,7 +75,7 @@ class BlobSpace:
             ret[pixel] = self.background
             for blob in self.blobs:
                 if blob.is_covering(pixel):
-                    ret[pixel] = blob.get_color(pixel - blob.pos)
+                    ret[pixel] = blob.get_color(int(pixel - blob.pos))
                     break
         return ret
 
