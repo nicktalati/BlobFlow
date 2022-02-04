@@ -105,8 +105,8 @@ if __name__ == '__main__':
     random.seed(2)
     picture = make_2d_pic(space, TIME_STEPS, NOISE)
 
-    random.seed(2)
-    make_video('video.mp4', space, TIME_STEPS, NOISE)
+    #random.seed(2)
+    #make_video('video.mp4', space, TIME_STEPS, NOISE)
 
 
     show_image(picture)
