@@ -2,6 +2,7 @@ import blob
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import cv2
 
 
 def make_3d_pic(dspace, frames, noise_amount=0):
@@ -21,11 +22,23 @@ def make_3d_pic(dspace, frames, noise_amount=0):
     return ret
 
 
+def make_video(name, dspace, frames, noise_amount=0):
+    out = cv2.VideoWriter(name, cv2.VideoWriter_fourcc(*'mp4v'), 30, (600, 200))
+    for _ in range(frames):
+        image_1d = dspace.create_2d_image()
+        add_noise(image_1d, noise_amount)
+        data = np.full((200, dspace.width, 3), image_1d, dtype='uint8')
+        dspace.time_step()
+        out.write(data)
+    out.release()
+
+
 def make_random_color():
     red = random.randint(10, 210)
     green = random.randint(10, 180)
     blue = random.randint(10, 160)
     return np.array([red, green, blue])
+
 
 def add_noise(picture_1d, amount):
     for entry in range(len(picture_1d)):
@@ -55,6 +68,7 @@ def make_random_blob(min_pos, max_pos, min_width, max_width, min_speed, max_spee
             values[value][index] = new_value
     return blob.Blob(position, speed, values, speed_var=speed_var, acc_var=acc_var)
 
+
 def show_image(array):
     plt.imshow(array)
     plt.show()
@@ -76,9 +90,9 @@ if __name__ == '__main__':
     of the resulting image:
     """
     COLOR_VAR = 25  # Works well between 0 and 40.
-    SPEED_VAR = 1   # Works well between 0 and 1.
-    ACC_VAR = .5    # Works well between 0 and .5. Quickly gets complicated.
-    NOISE = 20      # Works well between 0 and 100.
+    SPEED_VAR = 1  # Works well between 0 and 1.
+    ACC_VAR = .5  # Works well between 0 and .5. Quickly gets complicated.
+    NOISE = 5  # Works well between 0 and 100.
 
     space = blob.BlobSpace(SPACE_WIDTH, BACKGROUND)
 
@@ -88,5 +102,11 @@ if __name__ == '__main__':
                                        speed_var=SPEED_VAR, acc_var=ACC_VAR)
         space.add_blob(simple_blob)
 
-    picture = make_3d_pic(space, 200, NOISE)
+    random.seed(2)
+    picture = make_3d_pic(space, TIME_STEPS, NOISE)
+
+    #random.seed(2)
+    #make_video('video.mp4', space, TIME_STEPS, NOISE)
+
+
     show_image(picture)
