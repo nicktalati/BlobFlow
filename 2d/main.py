@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import cv2
 
 
-def make_3d_pic(dspace, frames, noise_amount=0):
+def make_2d_pic(dspace, frames, noise_amount=0):
     """
     This takes a BlobSpace "dspace" and advances it forward
     "frames" times. Each time it appends the state of the
@@ -15,9 +15,9 @@ def make_3d_pic(dspace, frames, noise_amount=0):
     """
     ret = np.empty((frames, dspace.width, 3), dtype=int)
     for frame in range(frames):
-        image_2d = dspace.create_2d_image()
-        add_noise(image_2d, noise_amount)
-        ret[frame] = image_2d
+        image_1d = dspace.create_1d_image()
+        add_noise(image_1d, noise_amount)
+        ret[frame] = image_1d
         dspace.time_step()
     return ret
 
@@ -25,7 +25,7 @@ def make_3d_pic(dspace, frames, noise_amount=0):
 def make_video(name, dspace, frames, noise_amount=0):
     out = cv2.VideoWriter(name, cv2.VideoWriter_fourcc(*'mp4v'), 30, (600, 200))
     for _ in range(frames):
-        image_1d = dspace.create_2d_image()
+        image_1d = dspace.create_1d_image()
         add_noise(image_1d, noise_amount)
         data = np.full((200, dspace.width, 3), image_1d, dtype='uint8')
         dspace.time_step()
@@ -103,10 +103,10 @@ if __name__ == '__main__':
         space.add_blob(simple_blob)
 
     random.seed(2)
-    picture = make_3d_pic(space, TIME_STEPS, NOISE)
+    picture = make_2d_pic(space, TIME_STEPS, NOISE)
 
-    #random.seed(2)
-    #make_video('video.mp4', space, TIME_STEPS, NOISE)
+    random.seed(2)
+    make_video('video.mp4', space, TIME_STEPS, NOISE)
 
 
     show_image(picture)

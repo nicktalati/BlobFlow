@@ -63,7 +63,7 @@ class BlobSpace:
         for elem in self.blobs:
             elem.time_step()
 
-    def create_2d_image(self):
+    def create_1d_image(self):
         """
         This essentially prints out the BlobSpace. At each pixel, the
         color returned is the color of the earliest-indexed blob in
